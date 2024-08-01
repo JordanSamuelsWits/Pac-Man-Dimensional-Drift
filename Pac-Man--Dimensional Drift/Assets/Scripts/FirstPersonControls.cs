@@ -45,7 +45,7 @@ public class FirstPersonControls : MonoBehaviour
         playerInput.Player.LookAround.canceled += ctx => lookInput = Vector2.zero; // Reset lookInput when look input is canceled
 
         // Subscribe to the jump input event
-       // playerInput.Player.Jump.performed += ctx => Jump(); // Call the Jump method when jump input is performed
+        playerInput.Player.Jump.performed += ctx => Jump(); // Call the Jump method when jump input is performed
     }
 
     private void Update()
@@ -95,7 +95,7 @@ public class FirstPersonControls : MonoBehaviour
         velocity.y += gravity * Time.deltaTime; // Apply gravity to the velocity
         characterController.Move(velocity * Time.deltaTime); // Apply the velocity to the character
     }
-/*
+
     public void Jump()
     {
         if (characterController.isGrounded)
@@ -104,5 +104,5 @@ public class FirstPersonControls : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
-*/
+
 }
