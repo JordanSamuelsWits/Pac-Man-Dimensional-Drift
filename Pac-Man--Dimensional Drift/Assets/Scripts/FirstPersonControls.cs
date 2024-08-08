@@ -24,7 +24,7 @@ public class FirstPersonControls : MonoBehaviour
     [Space(5)]
     public GameObject projectilePrefab; // Projectile prefab for shooting
     public Transform firePoint; // Point from which the projectile is fired
-    public float projectileSpeed = 20f; // Speed at which the projectile is fired
+    public float projectileSpeed = 200f; // Speed at which the projectile is fired
    
 
     [Header("PICKING UP SETTINGS")]
@@ -33,6 +33,14 @@ public class FirstPersonControls : MonoBehaviour
     private GameObject heldObject; // Reference to the currently held object
     public float pickUpRange = 3f; // Range within which objects can be picked up
     private bool holdingGun = false;
+
+    [Header("Crouch Settings")]
+    [Space(5)]
+    public float crouchHeight = 1.0f;
+    public float standingHeight = 2f;
+    public float crouchSpeed = 6f;
+    public bool isCrouching = false;
+    
 
 
     private void Awake()
@@ -66,6 +74,8 @@ public class FirstPersonControls : MonoBehaviour
         // Subscribe to the pick-up input event
         playerInput.Player.PickUp.performed += ctx => PickUpObject(); // Call the PickUpObject method when pick-up input is performed
 
+        playerInput.Player.Crouch.performed += ctx => ToggleCrouch(); // Call the PickUpObject method when pick-up input is performed
+
 
     }
 
@@ -87,6 +97,18 @@ public class FirstPersonControls : MonoBehaviour
 
         // Move the character controller based on the movement vector and speed
         characterController.Move(move * moveSpeed * Time.deltaTime);
+
+        //Adjust speed if coming
+        float currentSpeed ;
+        if (isCrouching)
+        {
+            currentSpeed = crouchSpeed;
+        }
+        else
+        {
+            currentSpeed = moveSpeed;
+        }
+        
     }
 
     public void LookAround()
@@ -187,6 +209,22 @@ public class FirstPersonControls : MonoBehaviour
 
                 holdingGun = true;
             }
+        }
+    }
+
+    public void ToggleCrouch()
+    {
+       if (isCrouching)
+        {
+            //Stand Up 
+            characterController.height = standingHeight;
+            isCrouching = false;
+        }
+        else
+        {
+            //Crouch Down
+            characterController.height = crouchHeight;
+            isCrouching = true;
         }
     }
 
