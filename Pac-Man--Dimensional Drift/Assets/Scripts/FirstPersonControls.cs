@@ -255,6 +255,7 @@ public class FirstPersonControls : MonoBehaviour
         moveSpeed = originalSpeed;
         isDashing = false; // Set dashing state to false
     }
+
     private void DashMovement()
     {
         if (dashTime > 0)
