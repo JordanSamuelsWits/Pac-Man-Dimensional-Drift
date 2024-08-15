@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class FirstPersonControls : MonoBehaviour
 {
-
     [Header("MOVEMENT SETTINGS")]
     [Space(5)]
     // Public variables to set movement and look speed, and the player camera
@@ -13,7 +12,6 @@ public class FirstPersonControls : MonoBehaviour
     public float gravity = -9.81f; // Gravity value
     public float jumpHeight = 1.0f; // Height of the jump
     public Transform playerCamera; // Reference to the player's camera
-                                   // Private variables to store input values and the character controller
     private Vector2 moveInput; // Stores the movement input from the player
     private Vector2 lookInput; // Stores the look input from the player
     private float verticalLookRotation = 0f; // Keeps track of vertical camera rotation for clamping
@@ -22,10 +20,10 @@ public class FirstPersonControls : MonoBehaviour
 
     [Header("SHOOTING SETTINGS")]
     [Space(5)]
+    // Private variables to store input values and the character controller
     public GameObject projectilePrefab; // Projectile prefab for shooting
     public Transform firePoint; // Point from which the projectile is fired
     public float projectileSpeed = 200f; // Speed at which the projectile is fired
-   
 
     [Header("PICKING UP SETTINGS")]
     [Space(5)]
@@ -34,14 +32,21 @@ public class FirstPersonControls : MonoBehaviour
     public float pickUpRange = 3f; // Range within which objects can be picked up
     private bool holdingGun = false;
 
-    [Header("Crouch Settings")]
+    [Header("SLIDING SETTINGS")]
     [Space(5)]
-    public float crouchHeight = 1.0f;
+    public float slideHeight = 0.5f;
     public float standingHeight = 2f;
-    public float crouchSpeed = 6f;
-    public bool isCrouching = false;
-    
+    public float slideSpeed = 10f; // Speed at which the player slides
+    public float slideDuration = 0.5f; // Duration of the slide
+    private bool isSliding = false; // Whether the player is currently sliding
+    private float slideTime = 0f; // Timer to track the slide duration
 
+    [Header("SPEEDASH SETTINGS")]
+    [Space(5)]
+    public float dashSpeed = 20f; // Speed at which the player dashes
+    public float dashDuration = 0.2f; // Duration of the dash
+    private bool isDashing = false; // Whether the player is currently dashing
+    private float dashTime = 0f; // Timer to track the dash duration
 
     private void Awake()
     {
@@ -53,38 +58,42 @@ public class FirstPersonControls : MonoBehaviour
     {
         // Create a new instance of the input actions
         var playerInput = new Controls();
-
+        
         // Enable the input actions
         playerInput.Player.Enable();
 
-        // Subscribe to the movement input events
-        playerInput.Player.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>(); // Update moveInput when movement input is performed
-        playerInput.Player.Movement.canceled += ctx => moveInput = Vector2.zero; // Reset moveInput when movement input is canceled
+        playerInput.Player.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        playerInput.Player.Movement.canceled += ctx => moveInput = Vector2.zero;
 
-        // Subscribe to the look input events
-        playerInput.Player.LookAround.performed += ctx => lookInput = ctx.ReadValue<Vector2>(); // Update lookInput when look input is performed
-        playerInput.Player.LookAround.canceled += ctx => lookInput = Vector2.zero; // Reset lookInput when look input is canceled
+        playerInput.Player.LookAround.performed += ctx => lookInput = ctx.ReadValue<Vector2>();
+        playerInput.Player.LookAround.canceled += ctx => lookInput = Vector2.zero;
 
-        // Subscribe to the jump input event
-        playerInput.Player.Jump.performed += ctx => Jump(); // Call the Jump method when jump input is performed
+        playerInput.Player.Jump.performed += ctx => Jump();
 
-        // Subscribe to the shoot input event
-        playerInput.Player.Shoot.performed += ctx => Shoot(); // Call the Shoot method when shoot input is performed
+        playerInput.Player.Shoot.performed += ctx => Shoot();
 
-        // Subscribe to the pick-up input event
-        playerInput.Player.PickUp.performed += ctx => PickUpObject(); // Call the PickUpObject method when pick-up input is performed
+        playerInput.Player.PickUp.performed += ctx => PickUpObject();
 
-        playerInput.Player.Crouch.performed += ctx => ToggleCrouch(); // Call the PickUpObject method when pick-up input is performed
+        playerInput.Player.Slide.performed += ctx => StartCoroutine(Slide()); // Start the Slide coroutine when the slide input is performed
 
-
+        playerInput.Player.SpeedDash.performed += ctx => StartCoroutine(SpeedDash());
     }
 
     private void Update()
     {
-        // Call Move and LookAround methods every frame to handle player movement and camera rotation
         Move();
         LookAround();
         ApplyGravity();
+
+        if (isDashing)
+        {
+            DashMovement();
+        }
+
+        if (isSliding)
+        {
+            SlideMovement();
+        }
     }
 
     public void Move()
@@ -98,17 +107,7 @@ public class FirstPersonControls : MonoBehaviour
         // Move the character controller based on the movement vector and speed
         characterController.Move(move * moveSpeed * Time.deltaTime);
 
-        //Adjust speed if coming
-        float currentSpeed ;
-        if (isCrouching)
-        {
-            currentSpeed = crouchSpeed;
-        }
-        else
-        {
-            currentSpeed = moveSpeed;
-        }
-        
+        float currentSpeed = isSliding ? slideSpeed : moveSpeed; // Adjust speed during slide
     }
 
     public void LookAround()
@@ -154,11 +153,9 @@ public class FirstPersonControls : MonoBehaviour
         {
             // Instantiate the projectile at the fire point
             GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-
             // Get the Rigidbody component of the projectile and set its velocity
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
             rb.velocity = firePoint.forward * projectileSpeed;
-
             // Destroy the projectile after 3 seconds
             Destroy(projectile, 3f);
         }
@@ -212,21 +209,61 @@ public class FirstPersonControls : MonoBehaviour
         }
     }
 
-    public void ToggleCrouch()
+    public IEnumerator Slide()
     {
-       if (isCrouching)
+        isSliding = true; // Set sliding state to true
+        slideTime = slideDuration; // Reset the slide timer
+
+        // Reduce character controller height for sliding
+        characterController.height = slideHeight;
+
+        // Temporarily increase the move speed for sliding
+        float originalSpeed = moveSpeed;
+        moveSpeed = slideSpeed;
+
+        // Wait for the slide duration to complete
+        yield return new WaitForSeconds(slideDuration);
+
+        // Restore the original move speed and character controller height
+        moveSpeed = originalSpeed;
+        characterController.height = standingHeight;
+        isSliding = false; // Set sliding state to false
+    }
+
+    private void SlideMovement()
+    {
+        if (slideTime > 0)
         {
-            //Stand Up 
-            characterController.height = standingHeight;
-            isCrouching = false;
+            slideTime -= Time.deltaTime; // Reduce the slide timer
         }
         else
         {
-            //Crouch Down
-            characterController.height = crouchHeight;
-            isCrouching = true;
+            isSliding = false; // End the slide
         }
     }
 
+    private IEnumerator SpeedDash()
+    {
+        isDashing = true; // Set dashing state to true
+        dashTime = dashDuration; // Reset the dash timer
 
+        float originalSpeed = moveSpeed;
+        moveSpeed = dashSpeed;
+
+        yield return new WaitForSeconds(dashDuration);
+
+        moveSpeed = originalSpeed;
+        isDashing = false; // Set dashing state to false
+    }
+    private void DashMovement()
+    {
+        if (dashTime > 0)
+        {
+            dashTime -= Time.deltaTime; // Reduce the dash timer
+        }
+        else
+        {
+            isDashing = false; // End the dash
+        }
+    }
 }
