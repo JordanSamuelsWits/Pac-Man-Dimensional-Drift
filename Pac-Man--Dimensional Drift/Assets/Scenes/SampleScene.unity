@@ -200,7 +200,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
       propertyPath: m_Name
-      value: CUSTOMCUBE
+      value: 3D MAZE (6 FACES, 6 LEVELS)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8433407001861142988, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -330,7 +334,7 @@ GameObject:
   - component: {fileID: 695596080}
   - component: {fileID: 695596083}
   m_Layer: 0
-  m_Name: Gun
+  m_Name: Gun(Might or might not use)
   m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -629,7 +633,7 @@ Camera:
     height: 1
   near clip plane: 0.05
   far clip plane: 2000
-  field of view: 100
+  field of view: 103
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -804,7 +808,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: a2046fcd65f7b544e8440ce4105914c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -863,7 +867,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  lookSpeed: 2
+  lookSpeed: 1.5
   gravity: -19.62
   jumpHeight: 5
   playerCamera: {fileID: 963194228}
@@ -876,9 +880,10 @@ MonoBehaviour:
   standingHeight: 2
   slideSpeed: 20
   slideDuration: 1
-  slideCooldown: 1
+  slideCooldown: 0.8
   dashSpeed: 30
-  dashDuration: 0.2
+  dashDuration: 0.67
+  dashCooldown: 0.8
 --- !u!1 &1681437035 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8433407001861142988, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
