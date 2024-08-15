@@ -52,6 +52,11 @@ public class FirstPersonControls : MonoBehaviour
     private float dashTime = 0f; // Timer to track the dash duration
     private bool canDash = true; // To control the cooldown between dashes
 
+    /*
+    We faced an issue whereby when consecutively pressing the keybinds for dashing and sliding, the actions would overlap
+    causing the player to get stuck in the move speed of either action. So the idea is to fix this by checking if one is still active
+    */
+
 
     private void Awake()
     {
@@ -59,6 +64,7 @@ public class FirstPersonControls : MonoBehaviour
         characterController = GetComponent<CharacterController>();
     }
 
+    private bool isPerformingAction = false; // To ensure that only one action (slide or dash) happens at a time
     private void OnEnable()
     {
         // Create a new instance of the input actions
@@ -82,13 +88,13 @@ public class FirstPersonControls : MonoBehaviour
         // Updated slide logic
         playerInput.Player.Slide.performed += ctx =>
         {
-            if (canSlide) StartCoroutine(Slide()); // Only start slide if it's allowed
+            if (canSlide && !isPerformingAction) StartCoroutine(Slide()); // Only start slide if it's allowed
         };
 
         // Updated dash logic
         playerInput.Player.SpeedDash.performed += ctx =>
         {
-            if (canDash) StartCoroutine(SpeedDash());
+            if (canDash && !isPerformingAction) StartCoroutine(SpeedDash());
         };
 
         //playerInput.Player.SpeedDash.performed += ctx => StartCoroutine(SpeedDash());
@@ -99,16 +105,6 @@ public class FirstPersonControls : MonoBehaviour
         Move();
         LookAround();
         ApplyGravity();
-
-        if (isDashing)
-        {
-            DashMovement();
-        }
-
-        if (isSliding)
-        {
-            SlideMovement();
-        }
     }
 
     public void Move()
@@ -229,6 +225,8 @@ public class FirstPersonControls : MonoBehaviour
         
         isSliding = true; // Set sliding state to true
         canSlide = false; // Disable sliding temporarily to prevent spamming
+        isPerformingAction = true; // Block other actions
+
         slideTime = slideDuration; // Reset the slide timer
 
         // Reduce character controller height for sliding
@@ -249,6 +247,7 @@ public class FirstPersonControls : MonoBehaviour
         // Add a short cooldown before allowing the next slide
         yield return new WaitForSeconds(slideCooldown); // Cooldown duration can be adjusted
         canSlide = true; // Re-enable sliding
+        isPerformingAction = false; // Now allows other actions
     }
     // We had a slight issue where if you spammed control (to slide), the character would
     // permanantly move with the slide speed and not the original move speed
@@ -264,7 +263,7 @@ public class FirstPersonControls : MonoBehaviour
         else
         {
             isSliding = false; // End the slide
-            moveSpeed = moveSpeed != slideSpeed ? moveSpeed : moveSpeed; // This ensures the speed is restored
+            //moveSpeed = moveSpeed != slideSpeed ? moveSpeed : moveSpeed; // This ensures the speed is restored
         }
     }
 
@@ -272,6 +271,8 @@ public class FirstPersonControls : MonoBehaviour
     {
         isDashing = true; // Set dashing state to true
         canDash = false; // Prevent further dashes until cooldown completes
+        isPerformingAction = true; // Block other actions
+
         dashTime = dashDuration; // Reset the dash timer
 
         float originalSpeed = moveSpeed;
@@ -284,6 +285,7 @@ public class FirstPersonControls : MonoBehaviour
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+        isPerformingAction = false; // Allow other actions
     }
 
     private void DashMovement()
