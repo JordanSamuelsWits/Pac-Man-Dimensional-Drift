@@ -38,15 +38,20 @@ public class FirstPersonControls : MonoBehaviour
     public float standingHeight = 2f;
     public float slideSpeed = 10f; // Speed at which the player slides
     public float slideDuration = 0.5f; // Duration of the slide
+    public float slideCooldown = 1f; // Adjustable cooldown duration for sliding
     private bool isSliding = false; // Whether the player is currently sliding
     private float slideTime = 0f; // Timer to track the slide duration
+    private bool canSlide = true; // To control the cooldown between slides
 
     [Header("SPEEDASH SETTINGS")]
     [Space(5)]
     public float dashSpeed = 20f; // Speed at which the player dashes
     public float dashDuration = 0.2f; // Duration of the dash
+    public float dashCooldown = 1f; // Adjustable cooldown duration for dashing
     private bool isDashing = false; // Whether the player is currently dashing
     private float dashTime = 0f; // Timer to track the dash duration
+    private bool canDash = true; // To control the cooldown between dashes
+
 
     private void Awake()
     {
@@ -74,9 +79,19 @@ public class FirstPersonControls : MonoBehaviour
 
         playerInput.Player.PickUp.performed += ctx => PickUpObject();
 
-        playerInput.Player.Slide.performed += ctx => StartCoroutine(Slide()); // Start the Slide coroutine when the slide input is performed
+        // Updated slide logic
+        playerInput.Player.Slide.performed += ctx =>
+        {
+            if (canSlide) StartCoroutine(Slide()); // Only start slide if it's allowed
+        };
 
-        playerInput.Player.SpeedDash.performed += ctx => StartCoroutine(SpeedDash());
+        // Updated dash logic
+        playerInput.Player.SpeedDash.performed += ctx =>
+        {
+            if (canDash) StartCoroutine(SpeedDash());
+        };
+
+        //playerInput.Player.SpeedDash.performed += ctx => StartCoroutine(SpeedDash());
     }
 
     private void Update()
@@ -211,7 +226,9 @@ public class FirstPersonControls : MonoBehaviour
 
     public IEnumerator Slide()
     {
+        
         isSliding = true; // Set sliding state to true
+        canSlide = false; // Disable sliding temporarily to prevent spamming
         slideTime = slideDuration; // Reset the slide timer
 
         // Reduce character controller height for sliding
@@ -228,23 +245,33 @@ public class FirstPersonControls : MonoBehaviour
         moveSpeed = originalSpeed;
         characterController.height = standingHeight;
         isSliding = false; // Set sliding state to false
-    }
 
+        // Add a short cooldown before allowing the next slide
+        yield return new WaitForSeconds(slideCooldown); // Cooldown duration can be adjusted
+        canSlide = true; // Re-enable sliding
+    }
+    // We had a slight issue where if you spammed control (to slide), the character would
+    // permanantly move with the slide speed and not the original move speed
+    // So the new code is an attempt to prevent that and handle better edge cases by introducing a cool down period between slides
+    
+    //private bool canSlide = true; // To track if sliding is allowed
     private void SlideMovement()
     {
-        if (slideTime > 0)
+        if (isSliding && slideTime >= 0) // Updated the argument
         {
             slideTime -= Time.deltaTime; // Reduce the slide timer
         }
         else
         {
             isSliding = false; // End the slide
+            moveSpeed = moveSpeed != slideSpeed ? moveSpeed : moveSpeed; // This ensures the speed is restored
         }
     }
 
     private IEnumerator SpeedDash()
     {
         isDashing = true; // Set dashing state to true
+        canDash = false; // Prevent further dashes until cooldown completes
         dashTime = dashDuration; // Reset the dash timer
 
         float originalSpeed = moveSpeed;
@@ -254,11 +281,14 @@ public class FirstPersonControls : MonoBehaviour
 
         moveSpeed = originalSpeed;
         isDashing = false; // Set dashing state to false
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
     private void DashMovement()
     {
-        if (dashTime > 0)
+        if (dashTime >= 0)
         {
             dashTime -= Time.deltaTime; // Reduce the dash timer
         }
