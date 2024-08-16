@@ -21,7 +21,9 @@ public class teleport : MonoBehaviour
 }
 */
 
+//---------------------------BackUp Code----------------------------------------------------------------------------------------------------------
 // Adaptation for our game
+/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,3 +85,76 @@ public class Teleport : MonoBehaviour
         player.gameObject.SetActive(true);
     }
 }
+*/
+//-------------------------------------------------------------------------------------------------------------------------------------
+
+/*
+So the goal is to be able to see the cube rotating when we exit the portal and falling onto the 3DCUBEMAZE
+But we've disabled the gameObject which then also means we've disabled the camera and the movement of PacMan,
+so lets add a few more methods to try and fix this
+ */
+
+using System.Collections;
+using UnityEngine;
+
+public class Teleport : MonoBehaviour
+{
+    public Transform player;
+    public Transform destination; // Destination portal location
+    public GameObject Player;
+    public Transform cubeToRotate;
+    public float rotationDuration = 2f; // Duration for the cube rotation
+    public float fallDuration = 0.5f; // Time it takes for the player to fall onto the cube
+
+    private FirstPersonControls playerControls; // Reference to the player's control script
+
+    private void Start()
+    {
+        playerControls = Player.GetComponent<FirstPersonControls>(); // Initialize the player controls reference
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform == player)
+        {
+            // Disable player controls briefly to prevent any unintended actions during teleportation
+            playerControls.enabled = false;
+
+            // Teleport the player to the destination and start the cube rotation
+            StartCoroutine(TeleportAndRotate());
+        }
+    }
+
+    private IEnumerator TeleportAndRotate()
+    {
+        // Teleport the player to the destination portal's position
+        player.position = destination.position;
+
+        // Allow the player to fall onto the cube naturally
+        yield return new WaitForSeconds(fallDuration);
+
+        // Re-enable player controls so the player can look around while the cube rotates
+        playerControls.enabled = true;
+
+        // Start rotating the cube independently of the player
+        StartCoroutine(RotateCube());
+    }
+
+    private IEnumerator RotateCube()
+    {
+        Quaternion startRotation = cubeToRotate.rotation;
+        Quaternion endRotation = startRotation * Quaternion.Euler(90f, 0f, 0f); // Rotate the cube by 90 degrees about the x-axis
+
+        float timeElapsed = 0f;
+        while (timeElapsed < rotationDuration)
+        {
+            cubeToRotate.rotation = Quaternion.Slerp(startRotation, endRotation, timeElapsed / rotationDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+        cubeToRotate.rotation = endRotation;
+    }
+}
+
+
+
