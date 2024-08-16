@@ -105,6 +105,7 @@ public class Teleport : MonoBehaviour
     public Transform cubeToRotate;
     public float rotationDuration = 2f; // Duration for the cube rotation
     public float fallDuration = 0.5f; // Time it takes for the player to fall onto the cube
+    public FadeTransition fadeTransition;
 
     private FirstPersonControls playerControls; // Reference to the player's control script
 
@@ -127,6 +128,8 @@ public class Teleport : MonoBehaviour
 
     private IEnumerator TeleportAndRotate()
     {
+        yield return fadeTransition.FadeOut(); // Start fading out
+
         // Teleport the player to the destination portal's position
         player.position = destination.position;
 
@@ -138,6 +141,8 @@ public class Teleport : MonoBehaviour
 
         // Start rotating the cube independently of the player
         StartCoroutine(RotateCube());
+
+        yield return fadeTransition.FadeIn(); // Start fading in
     }
 
     private IEnumerator RotateCube()
