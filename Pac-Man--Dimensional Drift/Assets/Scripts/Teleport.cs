@@ -97,6 +97,7 @@ so lets add a few more methods to try and fix this
 using System.Collections;
 using UnityEngine;
 
+
 public class Teleport : MonoBehaviour
 {
     public Transform player;
@@ -118,22 +119,22 @@ public class Teleport : MonoBehaviour
     {
         if (other.transform == player)
         {
-            // Disable player controls briefly to prevent any unintended actions during teleportation
+            // Disable player controls briefly
             playerControls.enabled = false;
 
-            // Teleport the player to the destination and start the cube rotation
+            // Teleport the player to the destination and start the cube rotation (with fading)
             StartCoroutine(TeleportAndRotate());
         }
     }
 
     private IEnumerator TeleportAndRotate()
     {
-        yield return fadeTransition.FadeOut(); // Start fading out
+        yield return fadeTransition.FadeOut(); // Start fading out and display "LEVEL 2" Text
 
         // Teleport the player to the destination portal's position
         player.position = destination.position;
 
-        // Allow the player to fall onto the cube naturally
+        // Allow the player to fall onto the cube
         yield return new WaitForSeconds(fallDuration);
 
         // Re-enable player controls so the player can look around while the cube rotates
@@ -142,7 +143,7 @@ public class Teleport : MonoBehaviour
         // Start rotating the cube independently of the player
         StartCoroutine(RotateCube());
 
-        yield return fadeTransition.FadeIn(); // Start fading in
+        yield return fadeTransition.FadeIn(); // Start fading in and display "LEVEL 2" Text
     }
 
     private IEnumerator RotateCube()
