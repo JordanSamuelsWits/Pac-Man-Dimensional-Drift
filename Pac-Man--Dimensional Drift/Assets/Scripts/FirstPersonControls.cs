@@ -8,7 +8,6 @@ public class FirstPersonControls : MonoBehaviour
     [Space(5)]
     // Public variables to set movement and look speed, and the player camera
     public float moveSpeed; // Speed at which the player moves
-    public float lookSpeed; // Sensitivity of the camera movement
     public float gravity = -9.81f; // Gravity value
     public float jumpHeight = 1.0f; // Height of the jump
     public Transform playerCamera; // Reference to the player's camera
@@ -17,6 +16,14 @@ public class FirstPersonControls : MonoBehaviour
     private float verticalLookRotation = 0f; // Keeps track of vertical camera rotation for clamping
     private Vector3 velocity; // Velocity of the player
     private CharacterController characterController; // Reference to the CharacterController component
+
+    [Header("LOOKSPEED SETTINGS")]
+    [Space(5)]
+    public float lookSpeed; // Sensitivity of the camera movement
+    public float mouseLookSpeed = 1.0f;     // Mouse sensitivity
+    public float gamepadLookSpeed = 1.0f;   // Gamepad sensitivity
+
+
 
     [Header("SHOOTING SETTINGS")]
     [Space(5)]
@@ -121,11 +128,23 @@ public class FirstPersonControls : MonoBehaviour
         float currentSpeed = isSliding ? slideSpeed : moveSpeed; // Adjust speed during slide
     }
 
-    public void LookAround()
+    public void LookAround() // Changing to logic to independently control the lookspeed of the mouse input and gamepd input
     {
-        // Get horizontal and vertical look inputs and adjust based on sensitivity
-        float LookX = lookInput.x * lookSpeed;
-        float LookY = lookInput.y * lookSpeed;
+        float LookX = 0f;
+        float LookY = 0f;
+
+        // We want to determine if the input is from the mouse or gamepad
+        if (Mouse.current != null && Mouse.current.delta == null) // I swear there is a better way but I am not sure
+        {
+            // Get horizontal and vertical look inputs and adjust based on sensitivity
+            LookX = lookInput.x * lookSpeed;
+            LookY = lookInput.y * lookSpeed;
+        }
+        else if (Gamepad.current != null) // I swear there is a better way but I am not sure
+        {
+            LookX = lookInput.x * gamepadLookSpeed;
+            LookY = lookInput.y * gamepadLookSpeed;
+        }
 
         // Horizontal rotation: Rotate the player object around the y-axis
         transform.Rotate(0, LookX, 0);
