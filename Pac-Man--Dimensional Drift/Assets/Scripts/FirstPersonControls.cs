@@ -141,7 +141,7 @@ public class FirstPersonControls : MonoBehaviour
         float LookY = 0f;
 
         // We want to determine if the input is from the mouse or gamepad
-        if (Mouse.current != null && Mouse.current.delta == null) // I swear there is a better way but I am not sure
+        if (Mouse.current != null && Mouse.current.delta != null) // I swear there is a better way but I am not sure
         {
             // Get horizontal and vertical look inputs and adjust based on sensitivity
             LookX = lookInput.x * lookSpeed;
