@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FirstPersonControls : MonoBehaviour
 {
@@ -23,21 +24,21 @@ public class FirstPersonControls : MonoBehaviour
     public float mouseLookSpeed = 1.0f;     // Mouse sensitivity
     public float gamepadLookSpeed = 1.0f;   // Gamepad sensitivity
 
-
-
+    /*
     [Header("SHOOTING SETTINGS")]
     [Space(5)]
     // Private variables to store input values and the character controller
     public GameObject projectilePrefab; // Projectile prefab for shooting
     public Transform firePoint; // Point from which the projectile is fired
     public float projectileSpeed = 200f; // Speed at which the projectile is fired
-
+    
     [Header("PICKING UP SETTINGS")]
     [Space(5)]
     public Transform holdPosition; // Position where the picked-up object will be held
     private GameObject heldObject; // Reference to the currently held object
     public float pickUpRange = 3f; // Range within which objects can be picked up
     private bool holdingGun = false;
+    */
 
     [Header("SLIDING SETTINGS")]
     [Space(5)]
@@ -88,9 +89,9 @@ public class FirstPersonControls : MonoBehaviour
 
         playerInput.Player.Jump.performed += ctx => Jump();
 
-        playerInput.Player.Shoot.performed += ctx => Shoot();
+        //playerInput.Player.Shoot.performed += ctx => Shoot();
 
-        playerInput.Player.PickUp.performed += ctx => PickUpObject();
+        //playerInput.Player.PickUp.performed += ctx => PickUpObject();
 
         // Updated slide logic
         playerInput.Player.Slide.performed += ctx =>
@@ -112,6 +113,12 @@ public class FirstPersonControls : MonoBehaviour
         Move();
         LookAround();
         ApplyGravity();
+
+        // Prevent sliding if jumping
+        if (!characterController.isGrounded)
+        {
+            isSliding = false; // Ensure the player stops sliding when in the air
+        }
     }
 
     public void Move()
@@ -170,13 +177,13 @@ public class FirstPersonControls : MonoBehaviour
 
     public void Jump()
     {
-        if (characterController.isGrounded)
+        if (characterController.isGrounded && !isSliding)
         {
             // Calculate the jump velocity
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
-
+    /*
     public void Shoot()
     {
         if (holdingGun == true)
@@ -207,8 +214,8 @@ public class FirstPersonControls : MonoBehaviour
 
         // Debugging: Draw the ray in the Scene view
         Debug.DrawRay(playerCamera.position, playerCamera.forward * pickUpRange, Color.red, 2f);
-
-
+    
+        
         if (Physics.Raycast(ray, out hit, pickUpRange))
         {
             // Check if the hit object has the tag "PickUp"
@@ -238,6 +245,7 @@ public class FirstPersonControls : MonoBehaviour
             }
         }
     }
+    */
 
     public IEnumerator Slide()
     {
