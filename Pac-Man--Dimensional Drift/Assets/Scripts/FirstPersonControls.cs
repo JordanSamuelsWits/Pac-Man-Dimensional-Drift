@@ -12,6 +12,7 @@ public class FirstPersonControls : MonoBehaviour
     public float gravity = -9.81f; // Gravity value
     public float jumpHeight = 1.0f; // Height of the jump
     public Transform playerCamera; // Reference to the player's camera
+    // Private variables to store input values and the character controller
     private Vector2 moveInput; // Stores the movement input from the player
     private Vector2 lookInput; // Stores the look input from the player
     private float verticalLookRotation = 0f; // Keeps track of vertical camera rotation for clamping
@@ -31,14 +32,20 @@ public class FirstPersonControls : MonoBehaviour
     public GameObject projectilePrefab; // Projectile prefab for shooting
     public Transform firePoint; // Point from which the projectile is fired
     public float projectileSpeed = 200f; // Speed at which the projectile is fired
-    
+
     [Header("PICKING UP SETTINGS")]
     [Space(5)]
-    public Transform holdPosition; // Position where the picked-up object will be held
-    private GameObject heldObject; // Reference to the currently held object
-    public float pickUpRange = 3f; // Range within which objects can be picked up
-    private bool holdingGun = false;
+    //public Transform holdPosition; // Position where the picked-up object will be held
+    //private GameObject heldObject; // Reference to the currently held object
+    //private bool holdingGun = false;
     */
+    
+
+    [Header("INTERACT SETTINGS")]
+    [Space(5)]
+    public Material switchMaterial; // Material to apply when switch is activated
+    public GameObject[] objectsToChangeColor; // Array of objects to change color
+    public float pickUpRange = 3f; // Range within which objects can be interacted with
 
     [Header("SLIDING SETTINGS")]
     [Space(5)]
@@ -106,6 +113,10 @@ public class FirstPersonControls : MonoBehaviour
         };
 
         //playerInput.Player.SpeedDash.performed += ctx => StartCoroutine(SpeedDash());
+
+        // Subscribe to the interact input event
+        playerInput.Player.Interact.performed += ctx => Interact(); // Interact with switch
+
     }
 
     private void Update()
@@ -183,6 +194,51 @@ public class FirstPersonControls : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
+
+    public void Interact()
+    {
+        // Perform a raycast to detect the lightswitch
+        Ray ray = new Ray(playerCamera.position, playerCamera.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, pickUpRange))
+        {
+            if (hit.collider.CompareTag("Switch")) // Assuming the switch has this tag
+            {
+                // Change the material color of the objects in the array
+                foreach (GameObject obj in objectsToChangeColor)
+                {
+                    Renderer renderer = obj.GetComponent<Renderer>();
+                    if (renderer != null)
+                    {
+                        renderer.material.color = switchMaterial.color; // Set the color to match the switch material color
+                    }
+                }
+            }
+
+            else if (hit.collider.CompareTag("Door")) // Check if the object is a door
+            {
+                // Start moving the door upwards
+                StartCoroutine(RaiseDoor(hit.collider.gameObject));
+            }
+        }
+    }
+
+    private IEnumerator RaiseDoor(GameObject door)
+    {
+        float moveAmount = 5f; // The total distance the door will be raised
+        float moveSpeed = 2f; // The speed at which the door will be raised
+        Vector3 startPosition = door.transform.position; // Store the initial position of the door
+        Vector3 endPosition = startPosition + Vector3.left * moveAmount; // Adjusted for us
+
+        // Continue sliding the door until it reaches the target height
+        while (door.transform.position.x < endPosition.x)
+        {
+            // Move the door towards the target position at the specified speed
+            door.transform.position = Vector3.MoveTowards(door.transform.position, endPosition, moveSpeed * Time.deltaTime);
+            yield return null; // Wait until the next frame before continuing the loop
+        }
+    }
     /*
     public void Shoot()
     {
@@ -246,6 +302,7 @@ public class FirstPersonControls : MonoBehaviour
         }
     }
     */
+
 
     public IEnumerator Slide()
     {

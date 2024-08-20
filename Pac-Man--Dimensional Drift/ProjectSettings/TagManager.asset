@@ -8,6 +8,8 @@ TagManager:
   - Gun
   - PickUp
   - PacMan
+  - Switch
+  - Door
   layers:
   - Default
   - TransparentFX
