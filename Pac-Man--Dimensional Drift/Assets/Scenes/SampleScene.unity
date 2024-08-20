@@ -318,12 +318,46 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 390870689}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1029337719}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8433407001861142988, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1681437039}
   m_SourcePrefab: {fileID: 100100000, guid: fa551a590d607914a8db1f5a613409a9, type: 3}
+--- !u!1 &390870688
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 390870689}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &390870689
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390870688}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.0792003, y: 5.4064, z: -1.88}
+  m_LocalScale: {x: 0.08, y: 0.7999999, z: 0.56}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 737381121}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &477076866
 GameObject:
   m_ObjectHideFlags: 0
@@ -1524,7 +1558,7 @@ MonoBehaviour:
   playerCamera: {fileID: 963194228}
   lookSpeed: 0.5
   mouseLookSpeed: 0.5
-  gamepadLookSpeed: 1
+  gamepadLookSpeed: 5
   slideHeight: 0.001
   standingHeight: 2
   slideSpeed: 20
