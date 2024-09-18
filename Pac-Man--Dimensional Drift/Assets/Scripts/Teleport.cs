@@ -94,6 +94,8 @@ But we've disabled the gameObject which then also means we've disabled the camer
 so lets add a few more methods to try and fix this
  */
 
+// We've now added functionality of Portals to ALL levels, with a timing sequence for each level's entryportal
+
 using System.Collections;
 using UnityEngine;
 
@@ -108,15 +110,34 @@ public class Teleport : MonoBehaviour
     public FadeTransition fadeTransition;
 
     private FirstPersonControls playerControls; // Reference to the player's control script
+    private bool isPortalActive = false;
 
     private void Start()
     {
         playerControls = Player.GetComponent<FirstPersonControls>(); // Initialize the player controls reference
+
+        // Start the countdown from the GameManager
+        int level = GetLevelNumber(); // Implement this method to get the current level number (1, 2, 3, etc.)
+        GameManager.Instance.StartPortalCountdown(level, 60f, this);  // Start countdown for the current portal
+    }
+
+    private int GetLevelNumber()
+    {
+        // Assuming your EntryPortal names follow a pattern like EntryPortalL1, EntryPortalL2, etc.
+        string portalName = gameObject.name;
+        string levelString = portalName.Replace("EntryPortalL", ""); // Get the level number from the name
+        return int.Parse(levelString); // Convert it to an integer
+    }
+
+    public void ActivateEntryPortal()
+    {
+        isPortalActive = true;  // Mark the portal as active
+        Debug.Log($"{gameObject.name} activated!");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform == player)
+        if (isPortalActive && other.transform == player)
         {
             // Disable player controls briefly to prevent any unintended actions during teleportation
             playerControls.enabled = false;
@@ -139,27 +160,15 @@ public class Teleport : MonoBehaviour
         // Re-enable player controls so the player can look around while the cube rotates
         playerControls.enabled = true;
 
-        // Start rotating the cube independently of the player
-        StartCoroutine(RotateCube());
+        // Start rotating the cube via GameManager
+        GameManager.Instance.RotateCube(cubeToRotate, rotationDuration);
 
         yield return fadeTransition.FadeIn(); // Start fading in
     }
-
-    private IEnumerator RotateCube()
-    {
-        Quaternion startRotation = cubeToRotate.rotation;
-        Quaternion endRotation = startRotation * Quaternion.Euler(90f, 0f, 0f); // Rotate the cube by 90 degrees about the x-axis
-
-        float timeElapsed = 0f;
-        while (timeElapsed < rotationDuration)
-        {
-            cubeToRotate.rotation = Quaternion.Slerp(startRotation, endRotation, timeElapsed / rotationDuration);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-        cubeToRotate.rotation = endRotation;
-    }
 }
+
+
+
 
 
 

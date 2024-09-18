@@ -10,6 +10,17 @@ TagManager:
   - PacMan
   - Switch
   - Door
+  - ExitPortalL1
+  - ExitPortalL2
+  - ExitPortalL3
+  - ExitPortalL4
+  - ExitPortalL5
+  - EntryPortalL1
+  - EntryPortalL2
+  - EntryPortalL3
+  - EntryPortalL4
+  - EntryPortalL5
+  - ExitPortalL6
   layers:
   - Default
   - TransparentFX
