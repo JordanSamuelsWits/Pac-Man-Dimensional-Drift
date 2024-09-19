@@ -109,6 +109,10 @@ public class Teleport : MonoBehaviour
     public float fallDuration = 0.5f; // Time it takes for the player to fall onto the cube
     public FadeTransition fadeTransition;
 
+    public float delay = 60f; // Adjust the countdown in the inspector
+    public bool isExitPortal = false; // Mark whether this is an exit portal
+    public Teleport nextEntryPortal; // Reference to the next entry portal for exit portals
+
     private FirstPersonControls playerControls; // Reference to the player's control script
     private bool isPortalActive = false;
 
@@ -116,9 +120,13 @@ public class Teleport : MonoBehaviour
     {
         playerControls = Player.GetComponent<FirstPersonControls>(); // Initialize the player controls reference
 
-        // Start the countdown from the GameManager
-        int level = GetLevelNumber(); // Implement this method to get the current level number (1, 2, 3, etc.)
-        GameManager.Instance.StartPortalCountdown(level, 60f, this);  // Start countdown for the current portal
+        // If this is an entry portal, disable the portal and start the countdown in GameManager
+        if (!isExitPortal)
+        {
+            gameObject.SetActive(false); // Disable the entry portal on start
+            int level = GetLevelNumber();
+            GameManager.Instance.StartPortalCountdown(level, delay, this);
+        }
     }
 
     private int GetLevelNumber()
@@ -126,11 +134,22 @@ public class Teleport : MonoBehaviour
         // Assuming your EntryPortal names follow a pattern like EntryPortalL1, EntryPortalL2, etc.
         string portalName = gameObject.name;
         string levelString = portalName.Replace("EntryPortalL", ""); // Get the level number from the name
-        return int.Parse(levelString); // Convert it to an integer
+
+        int level;
+        if (int.TryParse(levelString, out level))
+        {
+            return level; // Return the parsed level number
+        }
+        else
+        {
+            Debug.LogError($"Invalid portal name format: {portalName}. Expected 'EntryPortalL<number>'.");
+            return 0; // Return a default level (adjust if needed)
+        }
     }
 
     public void ActivateEntryPortal()
     {
+        gameObject.SetActive(true);  // Re-enable the portal after the countdown finishes
         isPortalActive = true;  // Mark the portal as active
         Debug.Log($"{gameObject.name} activated!");
     }
@@ -144,6 +163,14 @@ public class Teleport : MonoBehaviour
 
             // Teleport the player to the destination and start the cube rotation
             StartCoroutine(TeleportAndRotate());
+        }
+        else if (isExitPortal && other.transform == player)
+        {
+            // If this is an exit portal, activate the next entry portal countdown
+            if (nextEntryPortal != null)
+            {
+                GameManager.Instance.StartPortalCountdown(nextEntryPortal.GetLevelNumber(), delay, nextEntryPortal);
+            }
         }
     }
 
@@ -166,6 +193,8 @@ public class Teleport : MonoBehaviour
         yield return fadeTransition.FadeIn(); // Start fading in
     }
 }
+
+
 
 
 
