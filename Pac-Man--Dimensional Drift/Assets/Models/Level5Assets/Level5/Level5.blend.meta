@@ -3,7 +3,17 @@ guid: 0e371f46203097d40b688565416f5fd0
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BorderMaterial
+    second: {fileID: 2100000, guid: 4bd0fce17322c2a4db1a7ea7e50e738a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Level5LavaMaterial
+    second: {fileID: 2100000, guid: 3cf5c71fbf5b2cd4980fe3f2fdbd8567, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -131,7 +131,6 @@ public class Teleport : MonoBehaviour
 
     private int GetLevelNumber()
     {
-        // Assuming your EntryPortal names follow a pattern like EntryPortalL1, EntryPortalL2, etc.
         string portalName = gameObject.name;
         string levelString = portalName.Replace("EntryPortalL", ""); // Get the level number from the name
 
@@ -193,7 +192,6 @@ public class Teleport : MonoBehaviour
         yield return fadeTransition.FadeIn(); // Start fading in
     }
 }
-
 
 
 
