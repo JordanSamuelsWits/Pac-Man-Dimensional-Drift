@@ -7605,10 +7605,10 @@ MonoBehaviour:
   pickUpRange: 3
   slideHeight: 0.5
   standingHeight: 12.1
-  slideSpeed: 10
+  slideSpeed: 45
   slideDuration: 0.5
   slideCooldown: 1
-  dashSpeed: 20
+  dashSpeed: 50
   dashDuration: 0.2
   dashCooldown: 1
 --- !u!143 &934789378
