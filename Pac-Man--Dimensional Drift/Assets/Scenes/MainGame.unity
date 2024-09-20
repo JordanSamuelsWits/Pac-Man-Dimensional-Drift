@@ -7599,17 +7599,17 @@ MonoBehaviour:
   playerCamera: {fileID: 963194228}
   lookSpeed: 0.75
   mouseLookSpeed: 1
-  gamepadLookSpeed: 5
+  gamepadLookSpeed: 1
   switchMaterial: {fileID: 0}
   objectsToChangeColor: []
   pickUpRange: 3
-  slideHeight: 0.1
+  slideHeight: 0.5
   standingHeight: 12.1
-  slideSpeed: 45
-  slideDuration: 1
+  slideSpeed: 10
+  slideDuration: 0.5
   slideCooldown: 1
-  dashSpeed: 80
-  dashDuration: 0.5
+  dashSpeed: 20
+  dashDuration: 0.2
   dashCooldown: 1
 --- !u!143 &934789378
 CharacterController:
