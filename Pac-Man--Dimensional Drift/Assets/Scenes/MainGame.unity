@@ -8938,7 +8938,7 @@ MonoBehaviour:
   rotationDuration: 2
   fallDuration: 0.5
   fadeTransition: {fileID: 1395638648}
-  delay: 60
+  delay: 180
   isExitPortal: 1
   nextEntryPortal: {fileID: 2020364767}
 --- !u!1 &1208868352
@@ -9067,7 +9067,7 @@ MonoBehaviour:
   rotationDuration: 2
   fallDuration: 0.5
   fadeTransition: {fileID: 1395638648}
-  delay: 60
+  delay: 300
   isExitPortal: 1
   nextEntryPortal: {fileID: 0}
 --- !u!1 &1209730747 stripped
@@ -9962,7 +9962,7 @@ MonoBehaviour:
   rotationDuration: 2
   fallDuration: 0.5
   fadeTransition: {fileID: 1395638648}
-  delay: 60
+  delay: 120
   isExitPortal: 1
   nextEntryPortal: {fileID: 993406801}
 --- !u!1 &1395638646
@@ -12722,7 +12722,7 @@ MonoBehaviour:
   rotationDuration: 2
   fallDuration: 0.5
   fadeTransition: {fileID: 1395638648}
-  delay: 60
+  delay: 240
   isExitPortal: 1
   nextEntryPortal: {fileID: 65235064}
 --- !u!1001 &1528545360408965626
