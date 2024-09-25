@@ -21,6 +21,7 @@ TagManager:
   - EntryPortalL4
   - EntryPortalL5
   - ExitPortalL6
+  - MasterExitPortal
   layers:
   - Default
   - TransparentFX
