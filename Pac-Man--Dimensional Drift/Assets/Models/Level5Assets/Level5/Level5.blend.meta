@@ -12,8 +12,23 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Level5LavaMaterial
+      name: FloorLava
     second: {fileID: 2100000, guid: 3cf5c71fbf5b2cd4980fe3f2fdbd8567, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: FloorLavaRock
+    second: {fileID: 2100000, guid: 3cf5c71fbf5b2cd4980fe3f2fdbd8567, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Level5LavaMaterial
+    second: {fileID: 2100000, guid: a1fbe84d81c322f45b9966b74a158126, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ShaderLava
+    second: {fileID: 2100000, guid: 4fa420fab3f58d646bd9d2dbabbd0ba9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator RotateCubeCoroutine(Transform cubeToRotate, float duration)
     {
         Quaternion initialRotation = cubeToRotate.rotation;
-        Quaternion targetRotation = initialRotation * Quaternion.Euler(90f, 0f, 0f);
+        Quaternion targetRotation = initialRotation * Quaternion.Euler(0f, 90f, 0f);
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
