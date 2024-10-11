@@ -9,7 +9,7 @@ public class IntroSceneManager : MonoBehaviour
 {
     public VideoPlayer videoPlayer;  // Reference to the VideoPlayer component
     public Button startButton;       // Reference to the Start Button  
-    public float buttonDelay = 80f;  // Delay in seconds before button appears
+    public float buttonDelay = 10f;  // Delay in seconds before button appears
 
     void Start()
     {
