@@ -95,7 +95,7 @@ so lets add a few more methods to try and fix this
  */
 
 // We've now added functionality of Portals to ALL levels, with a timing sequence for each level's entryportal
-
+/*
 using System.Collections;
 using UnityEngine;
 
@@ -190,6 +190,138 @@ public class Teleport : MonoBehaviour
         GameManager.Instance.RotateCube(cubeToRotate, rotationDuration);
 
         yield return fadeTransition.FadeIn(); // Start fading in
+    }
+}
+
+*/
+
+using System.Collections;
+using UnityEngine;
+
+public class Teleport : MonoBehaviour
+{
+    public Transform player;
+    public Transform destination; // Destination portal location
+    public GameObject Player;
+    public Transform cubeToRotate;
+    public float rotationDuration = 2f; // Duration for the cube rotation
+    public float fallDuration = 0.5f; // Time it takes for the player to fall onto the cube
+    public FadeTransition fadeTransition;
+
+    public float delay = 60f; // Adjust the countdown in the inspector
+    public bool isExitPortal = false; // Mark whether this is an exit portal
+    public Teleport nextEntryPortal; // Reference to the next entry portal for exit portals
+
+    private FirstPersonControls playerControls; // Reference to the player's control script
+    private bool isPortalActive = false;
+
+    private Audio audioManager; // Reference to the Audio script
+    public string levelName; // Name of the current level
+
+    private void Start()
+    {
+        playerControls = Player.GetComponent<FirstPersonControls>(); // Initialize the player controls reference
+        audioManager = FindObjectOfType<Audio>(); // Find the Audio script in the scene
+
+        // If this is an entry portal, disable the portal and start the countdown in GameManager
+        if (!isExitPortal)
+        {
+            gameObject.SetActive(false); // Disable the entry portal on start
+            int level = GetLevelNumber();
+            GameManager.Instance.StartPortalCountdown(level, delay, this);
+        }
+    }
+
+    private int GetLevelNumber()
+    {
+        string portalName = gameObject.name;
+        string levelString = portalName.Replace("EntryPortalL", ""); // Get the level number from the name
+
+        int level;
+        if (int.TryParse(levelString, out level))
+        {
+            return level; // Return the parsed level number
+        }
+        else
+        {
+            Debug.LogError($"Invalid portal name format: {portalName}. Expected 'EntryPortalL<number>'.");
+            return 0; // Return a default level (adjust if needed)
+        }
+    }
+
+    public void ActivateEntryPortal()
+    {
+        gameObject.SetActive(true);  // Re-enable the portal after the countdown finishes
+        isPortalActive = true;  // Mark the portal as active
+        Debug.Log($"{gameObject.name} activated!");
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (isPortalActive && other.transform == player)
+        {
+            // Disable player controls briefly to prevent any unintended actions during teleportation
+            playerControls.enabled = false;
+
+            // Stop the current level's audio before teleporting
+            audioManager.StopCurrentAudio();
+
+            // Teleport the player to the destination and start the cube rotation
+            StartCoroutine(TeleportAndRotate());
+        }
+        else if (isExitPortal && other.transform == player)
+        {
+            // If this is an exit portal, activate the next entry portal countdown
+            if (nextEntryPortal != null)
+            {
+                GameManager.Instance.StartPortalCountdown(nextEntryPortal.GetLevelNumber(), delay, nextEntryPortal);
+            }
+
+            // Play the audio for the next level after exiting the portal
+            audioManager.PlayLevelAudio(GetNextLevelAudioName()); // Move to the next level's audio
+        }
+    }
+
+    private IEnumerator TeleportAndRotate()
+    {
+        yield return fadeTransition.FadeOut(); // Start fading out
+
+        // Teleport the player to the destination portal's position
+        player.position = destination.position;
+
+        // Allow the player to fall onto the cube naturally
+        yield return new WaitForSeconds(fallDuration);
+
+        // Re-enable player controls so the player can look around while the cube rotates
+        playerControls.enabled = true;
+
+        // Start rotating the cube via GameManager
+        GameManager.Instance.RotateCube(cubeToRotate, rotationDuration);
+
+        // Play the audio for the next level
+        audioManager.PlayLevelAudio(GetNextLevelAudioName()); // Ensure new level's audio starts
+
+        yield return fadeTransition.FadeIn(); // Start fading in
+    }
+
+    // Helper function to get the next level's audio name
+    private string GetNextLevelAudioName()
+    {
+        switch (levelName)
+        {
+            case "Glitch Pac-Town":
+                return "Forest Maze";
+            case "Forest Maze":
+                return "Desert Ruins";
+            case "Desert Ruins":
+                return "Ice Caverns";
+            case "Ice Caverns":
+                return "Volcanic Wasteland";
+            case "Volcanic Wasteland":
+                return "Techno City";
+            default:
+                return ""; // No next level
+        }
     }
 }
 

@@ -9,7 +9,7 @@ public class Powerup : MonoBehaviour
     // When the player collides with the power-up, activate it
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) // Check if the object colliding is the player
+        if (other.CompareTag("PacMan")) // Check if the object colliding is the player
         {
             StartCoroutine(PickUp(other));
         }
