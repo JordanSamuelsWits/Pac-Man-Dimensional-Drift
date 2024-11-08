@@ -296,7 +296,7 @@ public class Teleport : MonoBehaviour
         playerControls.enabled = true;
 
         // Start rotating the cube via GameManager
-        GameManager.Instance.RotateCube(cubeToRotate, rotationDuration);
+        //GameManager.Instance.RotateCube(cubeToRotate, rotationDuration);
 
         // Play the audio for the next level
         audioManager.PlayLevelAudio(GetNextLevelAudioName()); // Ensure new level's audio starts

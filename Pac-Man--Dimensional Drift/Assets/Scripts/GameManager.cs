@@ -37,11 +37,13 @@ public class GameManager : MonoBehaviour
     }
 
     // Method to rotate the cube
+    /*
     public void RotateCube(Transform cubeToRotate, float duration)
     {
         StartCoroutine(RotateCubeCoroutine(cubeToRotate, duration));
     }
-
+    */
+    /*
     private IEnumerator RotateCubeCoroutine(Transform cubeToRotate, float duration)
     {
         Quaternion initialRotation = cubeToRotate.rotation;
@@ -56,5 +58,5 @@ public class GameManager : MonoBehaviour
         }
 
         cubeToRotate.rotation = targetRotation;
-    }
+    }*/
 }
