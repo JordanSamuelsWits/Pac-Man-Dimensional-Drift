@@ -3,23 +3,16 @@ using UnityEngine.UI;
 
 public class HealthUI : MonoBehaviour
 {
-    public Health health;
-    public Slider healthSlider;
+    public Slider healthSlider;  // The health slider UI element
 
-    void Start()
+    public void SetMaxHealth(float maxHealth)
     {
-        if (health != null)
-        {
-            healthSlider.maxValue = health.maxHealth;
-            healthSlider.value = health.GetCurrentHealth();
-        }
+        healthSlider.maxValue = maxHealth;   // Set the max value of the health bar
+        healthSlider.value = maxHealth;      // Set current value to max health
     }
 
-    void Update()
+    public void SetHealth(float currentHealth)
     {
-        if (health != null)
-        {
-            healthSlider.value = health.GetCurrentHealth();
-        }
+        healthSlider.value = currentHealth; // Update the health slider with the current health
     }
 }

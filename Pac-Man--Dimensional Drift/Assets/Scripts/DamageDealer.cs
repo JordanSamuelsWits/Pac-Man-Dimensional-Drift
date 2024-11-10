@@ -1,12 +1,12 @@
+/*using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageDealer : MonoBehaviour
 {
-    public int defaultDamageAmount = 10; // Default damage for undefined tags
+    public int defaultDamageAmount = 10;
 
-    // Define specific damage values for each enemy type
     public int ghostDamage = 5;
     public int forestPhantomDamage = 8;
     public int mummyDamage = 10;
@@ -15,32 +15,24 @@ public class DamageDealer : MonoBehaviour
     public int droneDamage = 5;
     public int megaPacmanDamage = 20;
 
-    // Array of tags that should take damage on collision
     private string[] damageableTags = { "PacMan", "Ghost", "ForestPhantom", "Mummy", "IceGolem", "LavaMonster", "Drone", "MegaPacman" };
 
     void OnCollisionEnter(Collision collision)
     {
         // Check if the collided object has a tag that should take damage
-        foreach (string tag in damageableTags)
+        if (collision.gameObject.CompareTag("PacMan") || Array.Exists(damageableTags, tag => collision.gameObject.CompareTag(tag)))
         {
-            if (collision.gameObject.CompareTag(tag))
+            Health health = collision.gameObject.GetComponent<Health>();
+            if (health != null)
             {
-                // Get the health component of the collided object
-                Health health = collision.gameObject.GetComponent<Health>();
-                if (health != null)
-                {
-                    // Determine the damage amount based on the tag
-                    int damageAmount = GetDamageAmountByTag(tag);
-                    health.TakeDamage(damageAmount);
-                }
-                break;
+                int damageAmount = GetDamageAmountByTag(collision.gameObject.tag);
+                health.TakeDamage(damageAmount);
             }
         }
     }
 
     int GetDamageAmountByTag(string tag)
     {
-        // Return specific damage amount based on the tag
         switch (tag)
         {
             case "Ghost":
@@ -58,7 +50,28 @@ public class DamageDealer : MonoBehaviour
             case "MegaPacman":
                 return megaPacmanDamage;
             default:
-                return defaultDamageAmount; // Default damage if tag doesn't match
+                return defaultDamageAmount;
         }
     }
 }
+*/
+
+using UnityEngine;
+
+public class DamageDealer : MonoBehaviour
+{
+    public float damageAmount = 10f;  // Amount of damage the enemy deals
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PacMan")) // Check if the enemy collides with the player
+        {
+            Health playerHealth = other.GetComponent<Health>();  // Get the player's Health script
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damageAmount);  // Deal damage to the player
+            }
+        }
+    }
+}
+

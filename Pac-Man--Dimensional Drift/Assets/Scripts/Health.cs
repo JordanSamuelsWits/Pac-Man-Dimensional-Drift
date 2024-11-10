@@ -1,78 +1,91 @@
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+/*using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public int maxHealth = 100;
-    private int currentHealth;
+    public float maxHealth = 100f;    // Max health for the player
+    private float currentHealth;      // Current health
 
-    [Header("Death UI Elements")]
-    public GameObject deathMessage;
-    public Button restartButton;
-    public Button mainMenuButton;
+    public HealthUI healthUI;         // Reference to the HealthUI script
+    public GameOverUI gameOverUI;     // Reference to the GameOverUI script
 
     void Start()
     {
-        currentHealth = maxHealth;
-
-        // Hide death UI at the start
-        if (deathMessage != null)
-        {
-            deathMessage.SetActive(false);
-        }
-        if (restartButton != null)
-        {
-            restartButton.gameObject.SetActive(false);
-            restartButton.onClick.AddListener(RestartGame);
-        }
-        if (mainMenuButton != null)
-        {
-            mainMenuButton.gameObject.SetActive(false);
-            mainMenuButton.onClick.AddListener(ReturnToMainMenu);
-        }
+        currentHealth = maxHealth;   // Initialize health at the start
+        healthUI.SetMaxHealth(maxHealth);  // Initialize UI with max health
     }
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(float damage)
     {
-        currentHealth -= amount;
+        currentHealth -= damage;  // Subtract damage from current health
         if (currentHealth <= 0)
         {
-            Die();
+            currentHealth = 0;
+            Die();  // Call the death method when health reaches 0
         }
+
+        healthUI.SetHealth(currentHealth);  // Update the health UI
     }
 
-    public void Heal(int amount)
+    public void Heal(float amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        currentHealth += amount;
+        if (currentHealth > maxHealth) currentHealth = maxHealth; // Prevent health from going above max
+        healthUI.SetHealth(currentHealth);  // Update the health UI
     }
 
-    void Die()
+    private void Die()
     {
-        // Show death message and buttons
-        if (deathMessage != null) deathMessage.SetActive(true);
-        if (restartButton != null) restartButton.gameObject.SetActive(true);
-        if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(true);
+        // Handle death
+        Debug.Log("Player has died.");
 
-        Debug.Log($"{gameObject.name} has died.");
+        // Trigger the game over UI to show "You Died!" text and buttons
+        gameOverUI.ShowGameOverUI();
+    }
+}
+*/
+using UnityEngine;
 
-        // Disable player controls or other gameplay elements here if needed
+public class Health : MonoBehaviour
+{
+    public float maxHealth = 100f;    // Max health for the player
+    private float currentHealth;      // Current health
+
+    public HealthUI healthUI;         // Reference to the HealthUI script
+    public GameOverUI gameOverUI;     // Reference to the GameOverUI script
+
+    void Start()
+    {
+        currentHealth = maxHealth;   // Initialize health at the start
+        healthUI.SetMaxHealth(maxHealth);  // Initialize UI with max health
     }
 
-    public int GetCurrentHealth()
+    public void TakeDamage(float damage)
     {
-        return currentHealth;
+        currentHealth -= damage;  // Subtract damage from current health
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            Die();  // Call the death method when health reaches 0
+        }
+
+        healthUI.SetHealth(currentHealth);  // Update the health UI
     }
 
-    // Method to restart the game
-    void RestartGame()
+    public void Heal(float amount)
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload current scene
+        currentHealth += amount;
+        if (currentHealth > maxHealth) currentHealth = maxHealth; // Prevent health from going above max
+        healthUI.SetHealth(currentHealth);  // Update the health UI
     }
 
-    // Method to return to main menu
-    void ReturnToMainMenu()
+    private void Die()
     {
-        SceneManager.LoadScene("MainMenu"); // Replace with the main menu scene name
+        // Handle death
+        Debug.Log("Player has died.");
+
+        Time.timeScale = 0f;
+
+        // Trigger the game over UI to show "You Died!" text and buttons
+        gameOverUI.ShowGameOverUI();
     }
 }
