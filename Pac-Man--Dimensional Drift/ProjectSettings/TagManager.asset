@@ -22,6 +22,12 @@ TagManager:
   - EntryPortalL5
   - ExitPortalL6
   - MasterExitPortal
+  - Ghost
+  - ForestPhantom
+  - Mummy
+  - IceGolem
+  - LavaMonster
+  - MegaPacman
   layers:
   - Default
   - TransparentFX
