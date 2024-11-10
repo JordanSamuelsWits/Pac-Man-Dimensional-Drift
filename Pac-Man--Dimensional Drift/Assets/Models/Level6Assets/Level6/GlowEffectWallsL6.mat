@@ -103,7 +103,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Adjust: 1
+    - _Adjust: 0.839
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -125,7 +125,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _NoiseScale: 59.5
+    - _NoiseScale: 42.5
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -138,7 +138,7 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _Timer: 9.9
+    - _Timer: 7.4
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
