@@ -40,8 +40,8 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Lightning_BaseColour: {r: 0, g: 0, b: 0, a: 0}
-    - _Lightning_EmissionColour: {r: 0, g: 0, b: 0, a: 0}
+    - _Lightning_BaseColour: {r: 0, g: 0.26506948, b: 1, a: 0}
+    - _Lightning_EmissionColour: {r: 8.925579, g: 17.127241, b: 51.984146, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &8731055730090025043
 MonoBehaviour:

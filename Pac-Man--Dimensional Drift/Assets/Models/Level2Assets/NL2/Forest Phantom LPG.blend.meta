@@ -3,7 +3,37 @@ guid: 3767d819952616945bb7fcabfb7cc48d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Base
+    second: {fileID: 2100000, guid: 4a58578c7fd1d3c45967bb2dc4cc8e37, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Beard
+    second: {fileID: 2100000, guid: ced2c803a07f3174da040e18a3ccd717, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Branches
+    second: {fileID: 2100000, guid: 399b7e9d5b2cdeb49858b58fa86ae07d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Eyes
+    second: {fileID: 2100000, guid: 1f7db565eef6be94292a62a100a40097, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Grass
+    second: {fileID: 2100000, guid: d68854947dd54ce409958455bb91b5bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mouth
+    second: {fileID: 2100000, guid: 538375eab0f7275428de34af42e899ce, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
