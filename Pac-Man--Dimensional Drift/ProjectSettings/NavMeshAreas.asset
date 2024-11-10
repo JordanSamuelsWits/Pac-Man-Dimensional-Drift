@@ -180,7 +180,7 @@ NavMeshProjectSettings:
     debug:
       m_Flags: 0
   m_SettingNames:
-  - Humanoid
+  - Ghosts
   - Forest Phantom
   - Mummy
   - Ice Golem

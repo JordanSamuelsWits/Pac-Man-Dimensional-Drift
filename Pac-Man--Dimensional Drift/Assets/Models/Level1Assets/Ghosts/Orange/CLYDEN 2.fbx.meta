@@ -3,7 +3,17 @@ guid: 49914430157d0bf4db2ffe0a8698dbe1
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Orange Ghost Material
+    second: {fileID: 2100000, guid: c35e7538f98017d44af7dc774d7d747e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eye Glow
+    second: {fileID: 2100000, guid: 2e85caa0be387ba4ba784b51b0bd90e6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
