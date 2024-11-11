@@ -43,6 +43,8 @@ public class Health : MonoBehaviour
     }
 }
 */
+
+/*
 using UnityEngine;
 
 public class Health : MonoBehaviour
@@ -87,5 +89,45 @@ public class Health : MonoBehaviour
 
         // Trigger the game over UI to show "You Died!" text and buttons
         gameOverUI.ShowGameOverUI();
+    }
+}
+*/
+
+using UnityEngine;
+using UnityEngine.SceneManagement;  // Import SceneManager
+
+public class Health : MonoBehaviour
+{
+    public float maxHealth = 100f;
+    private float currentHealth;
+
+    public HealthUI healthUI;      // Reference to the HealthUI script
+    public string gameOverScene;   // Name of the scene to load upon death
+
+    void Start()
+    {
+        currentHealth = maxHealth;
+        healthUI.SetMaxHealth(maxHealth);
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            Die();  // Call the death method when health reaches 0
+        }
+
+        healthUI.SetHealth(currentHealth);
+    }
+
+    private void Die()
+    {
+        // Optional: Show game over UI
+        Debug.Log("Player has died.");
+
+        // Load the specified game over scene
+        SceneManager.LoadScene("GameOverScene");
     }
 }
