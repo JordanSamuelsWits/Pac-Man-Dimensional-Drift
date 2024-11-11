@@ -150,8 +150,8 @@ public class LightningShapeGenerator : MonoBehaviour
         // Creating initial lightning branch for the algorithm.
         LightningBranch initialLightningBranch = new LightningBranch
         {
-            IntensityPercentage = 1f,
-            WidthPercentage = 1f,
+            IntensityPercentage = 10f,
+            WidthPercentage = 10f,
             CreationGeneration = 0,
             SpawnPointIndex = 0,
             LightningPoints = points
