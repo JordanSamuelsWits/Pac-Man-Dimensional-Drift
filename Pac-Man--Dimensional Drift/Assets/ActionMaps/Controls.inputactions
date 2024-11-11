@@ -76,6 +76,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Punch",
+                    "type": "Button",
+                    "id": "5f08cc51-cbf3-4844-b67d-964fed23224b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Kick",
+                    "type": "Button",
+                    "id": "35a61248-2947-46f5-a154-82d37e2099df",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -351,6 +369,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "601b302c-ef43-4476-9ce0-5a61196ec149",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Punch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6236ad1d-6242-4a6c-998b-7ccbd96b5a09",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Kick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

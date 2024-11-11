@@ -25,22 +25,6 @@ public class FirstPersonControls : MonoBehaviour
     public float mouseLookSpeed = 1.0f;     // Mouse sensitivity
     public float gamepadLookSpeed = 1.0f;   // Gamepad sensitivity
 
-    /*
-    [Header("SHOOTING SETTINGS")]
-    [Space(5)]
-    // Private variables to store input values and the character controller
-    public GameObject projectilePrefab; // Projectile prefab for shooting
-    public Transform firePoint; // Point from which the projectile is fired
-    public float projectileSpeed = 200f; // Speed at which the projectile is fired
-
-    [Header("PICKING UP SETTINGS")]
-    [Space(5)]
-    //public Transform holdPosition; // Position where the picked-up object will be held
-    //private GameObject heldObject; // Reference to the currently held object
-    //private bool holdingGun = false;
-    */
-    
-
     [Header("INTERACT SETTINGS")]
     [Space(5)]
     public Material switchMaterial; // Material to apply when switch is activated
@@ -67,11 +51,12 @@ public class FirstPersonControls : MonoBehaviour
     private float dashTime = 0f; // Timer to track the dash duration
     private bool canDash = true; // To control the cooldown between dashes
 
-    /*
-    We faced an issue whereby when consecutively pressing the keybinds for dashing and sliding, the actions would overlap
-    causing the player to get stuck in the move speed of either action. So the idea is to fix this by checking if one is still active
-    */
-
+    [Header("COMBAT SETTINGS")]
+    [Space(5)]
+    public float attackRange = 5f; // Range for punch and kick attacks
+    public int punchDamage = 10;   // Damage dealt by punch
+    public int kickDamage = 20;    // Damage dealt by kick
+    public string[] enemyTags;     // Tags of the enemies the player can attack
 
     private void Awake()
     {
@@ -82,10 +67,7 @@ public class FirstPersonControls : MonoBehaviour
     private bool isPerformingAction = false; // To ensure that only one action (slide or dash) happens at a time
     private void OnEnable()
     {
-        // Create a new instance of the input actions
         var playerInput = new Controls();
-        
-        // Enable the input actions
         playerInput.Player.Enable();
 
         playerInput.Player.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
@@ -96,9 +78,17 @@ public class FirstPersonControls : MonoBehaviour
 
         playerInput.Player.Jump.performed += ctx => Jump();
 
-        //playerInput.Player.Shoot.performed += ctx => Shoot();
-
-        //playerInput.Player.PickUp.performed += ctx => PickUpObject();
+        // Combat Input Bindings for Punch and Kick
+        playerInput.Player.Punch.performed += ctx =>
+        {
+            Debug.Log("Punch action triggered");
+            PerformPunch();
+        };
+        playerInput.Player.Kick.performed += ctx =>
+        {
+            Debug.Log("Kick action triggered");
+            PerformKick();
+        };
 
         // Updated slide logic
         playerInput.Player.Slide.performed += ctx =>
@@ -112,11 +102,7 @@ public class FirstPersonControls : MonoBehaviour
             if (canDash && !isPerformingAction) StartCoroutine(SpeedDash());
         };
 
-        //playerInput.Player.SpeedDash.performed += ctx => StartCoroutine(SpeedDash());
-
-        // Subscribe to the interact input event
         playerInput.Player.Interact.performed += ctx => Interact(); // Interact with switch
-
     }
 
     private void Update()
@@ -132,93 +118,115 @@ public class FirstPersonControls : MonoBehaviour
         }
     }
 
+    // Movement
     public void Move()
     {
-        // Create a movement vector based on the input
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
-
-        // Transform direction from local to world space
         move = transform.TransformDirection(move);
-
-        // Move the character controller based on the movement vector and speed
         characterController.Move(move * moveSpeed * Time.deltaTime);
-
-        float currentSpeed = isSliding ? slideSpeed : moveSpeed; // Adjust speed during slide
     }
 
-    public void LookAround() // Changing to logic to independently control the lookspeed of the mouse input and gamepd input
+    // LookAround
+    public void LookAround()
     {
-        float LookX = 0f;
-        float LookY = 0f;
+        float LookX = lookInput.x * lookSpeed;
+        float LookY = lookInput.y * lookSpeed;
 
-        // We want to determine if the input is from the mouse or gamepad
-        if (Mouse.current != null && Mouse.current.delta != null) // I swear there is a better way but I am not sure
-        {
-            // Get horizontal and vertical look inputs and adjust based on sensitivity
-            LookX = lookInput.x * lookSpeed;
-            LookY = lookInput.y * lookSpeed;
-        }
-        else if (Gamepad.current != null) // I swear there is a better way but I am not sure
-        {
-            LookX = lookInput.x * gamepadLookSpeed;
-            LookY = lookInput.y * gamepadLookSpeed;
-        }
-
-        // Horizontal rotation: Rotate the player object around the y-axis
         transform.Rotate(0, LookX, 0);
 
-        // Vertical rotation: Adjust the vertical look rotation and clamp it to prevent flipping
         verticalLookRotation -= LookY;
         verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
-
-        // Apply the clamped vertical rotation to the player camera
         playerCamera.localEulerAngles = new Vector3(verticalLookRotation, 0, 0);
     }
 
+    // Apply Gravity
     public void ApplyGravity()
     {
         if (characterController.isGrounded && velocity.y < 0)
         {
             velocity.y = -0.5f; // Small value to keep the player grounded
         }
-
-        velocity.y += gravity * Time.deltaTime; // Apply gravity to the velocity
-        characterController.Move(velocity * Time.deltaTime); // Apply the velocity to the character
+        velocity.y += gravity * Time.deltaTime;
+        characterController.Move(velocity * Time.deltaTime);
     }
 
+    // Jump
     public void Jump()
     {
         if (characterController.isGrounded && !isSliding)
         {
-            // Calculate the jump velocity
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
 
+    // Combat Methods: Punch and Kick
+    private void PerformPunch()
+    {
+        Debug.Log("Punch performed!");
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, attackRange))
+        {
+            // Check if the hit object has one of the tags in the enemyTags list
+            foreach (string tag in enemyTags)
+            {
+                if (hit.collider.CompareTag(tag))
+                {
+                    EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
+                    if (enemyHealth != null)
+                    {
+                        Debug.Log("Enemy hit with punch!");
+                        enemyHealth.TakeDamage(punchDamage);  // Deal damage to the enemy
+                    }
+                    return; // Exit the loop once an enemy is found and damaged
+                }
+            }
+        }
+    }
+
+    private void PerformKick()
+    {
+        Debug.Log("Kick performed!");
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, attackRange))
+        {
+            // Check if the hit object has one of the tags in the enemyTags list
+            foreach (string tag in enemyTags)
+            {
+                if (hit.collider.CompareTag(tag))
+                {
+                    EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
+                    if (enemyHealth != null)
+                    {
+                        Debug.Log("Enemy hit with kick!");
+                        enemyHealth.TakeDamage(kickDamage);  // Deal damage to the enemy
+                    }
+                    return; // Exit the loop once an enemy is found and damaged
+                }
+            }
+        }
+    }
+
+    // Interact
     public void Interact()
     {
-        // Perform a raycast to detect the lightswitch
         Ray ray = new Ray(playerCamera.position, playerCamera.forward);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, pickUpRange))
         {
-            if (hit.collider.CompareTag("Switch")) // Assuming the switch has this tag
+            if (hit.collider.CompareTag("Switch"))
             {
-                // Change the material color of the objects in the array
                 foreach (GameObject obj in objectsToChangeColor)
                 {
                     Renderer renderer = obj.GetComponent<Renderer>();
                     if (renderer != null)
                     {
-                        renderer.material.color = switchMaterial.color; // Set the color to match the switch material color
+                        renderer.material.color = switchMaterial.color;
                     }
                 }
             }
-
-            else if (hit.collider.CompareTag("Door")) // Check if the object is a door
+            else if (hit.collider.CompareTag("Door"))
             {
-                // Start moving the door upwards
                 StartCoroutine(RaiseDoor(hit.collider.gameObject));
             }
         }
@@ -226,138 +234,48 @@ public class FirstPersonControls : MonoBehaviour
 
     private IEnumerator RaiseDoor(GameObject door)
     {
-        float moveAmount = 5f; // The total distance the door will be raised
-        float moveSpeed = 2f; // The speed at which the door will be raised
-        Vector3 startPosition = door.transform.position; // Store the initial position of the door
-        Vector3 endPosition = startPosition + Vector3.left * moveAmount; // Adjusted for us
+        float moveAmount = 5f;
+        float moveSpeed = 2f;
+        Vector3 startPosition = door.transform.position;
+        Vector3 endPosition = startPosition + Vector3.left * moveAmount;
 
-        // Continue sliding the door until it reaches the target height
         while (door.transform.position.x < endPosition.x)
         {
-            // Move the door towards the target position at the specified speed
             door.transform.position = Vector3.MoveTowards(door.transform.position, endPosition, moveSpeed * Time.deltaTime);
-            yield return null; // Wait until the next frame before continuing the loop
-        }
-    }
-    /*
-    public void Shoot()
-    {
-        if (holdingGun == true)
-        {
-            // Instantiate the projectile at the fire point
-            GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-            // Get the Rigidbody component of the projectile and set its velocity
-            Rigidbody rb = projectile.GetComponent<Rigidbody>();
-            rb.velocity = firePoint.forward * projectileSpeed;
-            // Destroy the projectile after 3 seconds
-            Destroy(projectile, 3f);
+            yield return null;
         }
     }
 
-    public void PickUpObject()
-    {
-        // Check if we are already holding an object
-        if (heldObject != null)
-        {
-            heldObject.GetComponent<Rigidbody>().isKinematic = false; // Enable physics
-            heldObject.transform.parent = null;
-            holdingGun = false;
-        }
-
-        // Perform a raycast from the camera's position forward
-        Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-        RaycastHit hit;
-
-        // Debugging: Draw the ray in the Scene view
-        Debug.DrawRay(playerCamera.position, playerCamera.forward * pickUpRange, Color.red, 2f);
-    
-        
-        if (Physics.Raycast(ray, out hit, pickUpRange))
-        {
-            // Check if the hit object has the tag "PickUp"
-            if (hit.collider.CompareTag("PickUp"))
-            {
-                // Pick up the object
-                heldObject = hit.collider.gameObject;
-                heldObject.GetComponent<Rigidbody>().isKinematic = true; // Disable physics
-
-                // Attach the object to the hold position
-                heldObject.transform.position = holdPosition.position;
-                heldObject.transform.rotation = holdPosition.rotation;
-                heldObject.transform.parent = holdPosition;
-            }
-            else if (hit.collider.CompareTag("Gun"))
-            {
-                // Pick up the object
-                heldObject = hit.collider.gameObject;
-                heldObject.GetComponent<Rigidbody>().isKinematic = true; // Disable physics
-
-                // Attach the object to the hold position
-                heldObject.transform.position = holdPosition.position;
-                heldObject.transform.rotation = holdPosition.rotation;
-                heldObject.transform.parent = holdPosition;
-
-                holdingGun = true;
-            }
-        }
-    }
-    */
-
-
+    // Slide
     public IEnumerator Slide()
     {
-        
-        isSliding = true; // Set sliding state to true
-        canSlide = false; // Disable sliding temporarily to prevent spamming
-        isPerformingAction = true; // Block other actions
+        isSliding = true;
+        canSlide = false;
+        isPerformingAction = true;
 
-        slideTime = slideDuration; // Reset the slide timer
+        slideTime = slideDuration;
 
-        // Reduce character controller height for sliding
         characterController.height = slideHeight;
-
-        // Temporarily increase the move speed for sliding
         float originalSpeed = moveSpeed;
         moveSpeed = slideSpeed;
 
-        // Wait for the slide duration to complete
-        yield return new WaitForSeconds(slideDuration);
+        yield return new WaitForSeconds(slideTime);
 
-        // Restore the original move speed and character controller height
-        moveSpeed = originalSpeed;
         characterController.height = standingHeight;
-        isSliding = false; // Set sliding state to false
+        moveSpeed = originalSpeed;
 
-        // Add a short cooldown before allowing the next slide
-        yield return new WaitForSeconds(slideCooldown); // Cooldown duration can be adjusted
-        canSlide = true; // Re-enable sliding
-        isPerformingAction = false; // Now allows other actions
-    }
-    // We had a slight issue where if you spammed control (to slide), the character would
-    // permanantly move with the slide speed and not the original move speed
-    // So the new code is an attempt to prevent that and handle better edge cases by introducing a cool down period between slides
-    
-    //private bool canSlide = true; // To track if sliding is allowed
-    private void SlideMovement()
-    {
-        if (isSliding && slideTime >= 0) // Updated the argument
-        {
-            slideTime -= Time.deltaTime; // Reduce the slide timer
-        }
-        else
-        {
-            isSliding = false; // End the slide
-            //moveSpeed = moveSpeed != slideSpeed ? moveSpeed : moveSpeed; // This ensures the speed is restored
-        }
+        yield return new WaitForSeconds(slideCooldown);
+
+        canSlide = true;
+        isPerformingAction = false;
     }
 
-    private IEnumerator SpeedDash()
+    // Dash
+    public IEnumerator SpeedDash()
     {
-        isDashing = true; // Set dashing state to true
-        canDash = false; // Prevent further dashes until cooldown completes
-        isPerformingAction = true; // Block other actions
-
-        dashTime = dashDuration; // Reset the dash timer
+        isDashing = true;
+        canDash = false;
+        isPerformingAction = true;
 
         float originalSpeed = moveSpeed;
         moveSpeed = dashSpeed;
@@ -365,22 +283,10 @@ public class FirstPersonControls : MonoBehaviour
         yield return new WaitForSeconds(dashDuration);
 
         moveSpeed = originalSpeed;
-        isDashing = false; // Set dashing state to false
 
         yield return new WaitForSeconds(dashCooldown);
-        canDash = true;
-        isPerformingAction = false; // Allow other actions
-    }
 
-    private void DashMovement()
-    {
-        if (dashTime >= 0)
-        {
-            dashTime -= Time.deltaTime; // Reduce the dash timer
-        }
-        else
-        {
-            isDashing = false; // End the dash
-        }
+        canDash = true;
+        isPerformingAction = false;
     }
 }

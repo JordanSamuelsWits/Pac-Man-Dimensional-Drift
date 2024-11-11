@@ -98,6 +98,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Punch"",
+                    ""type"": ""Button"",
+                    ""id"": ""5f08cc51-cbf3-4844-b67d-964fed23224b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Kick"",
+                    ""type"": ""Button"",
+                    ""id"": ""35a61248-2947-46f5-a154-82d37e2099df"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -375,6 +393,28 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""601b302c-ef43-4476-9ce0-5a61196ec149"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Punch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6236ad1d-6242-4a6c-998b-7ccbd96b5a09"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Kick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -414,6 +454,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_Slide = m_Player.FindAction("Slide", throwIfNotFound: true);
         m_Player_SpeedDash = m_Player.FindAction("SpeedDash", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_Punch = m_Player.FindAction("Punch", throwIfNotFound: true);
+        m_Player_Kick = m_Player.FindAction("Kick", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -483,6 +525,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Slide;
     private readonly InputAction m_Player_SpeedDash;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_Punch;
+    private readonly InputAction m_Player_Kick;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -495,6 +539,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Slide => m_Wrapper.m_Player_Slide;
         public InputAction @SpeedDash => m_Wrapper.m_Player_SpeedDash;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @Punch => m_Wrapper.m_Player_Punch;
+        public InputAction @Kick => m_Wrapper.m_Player_Kick;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -528,6 +574,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Punch.started += instance.OnPunch;
+            @Punch.performed += instance.OnPunch;
+            @Punch.canceled += instance.OnPunch;
+            @Kick.started += instance.OnKick;
+            @Kick.performed += instance.OnKick;
+            @Kick.canceled += instance.OnKick;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -556,6 +608,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Punch.started -= instance.OnPunch;
+            @Punch.performed -= instance.OnPunch;
+            @Punch.canceled -= instance.OnPunch;
+            @Kick.started -= instance.OnKick;
+            @Kick.performed -= instance.OnKick;
+            @Kick.canceled -= instance.OnKick;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -601,5 +659,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnSlide(InputAction.CallbackContext context);
         void OnSpeedDash(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnPunch(InputAction.CallbackContext context);
+        void OnKick(InputAction.CallbackContext context);
     }
 }
