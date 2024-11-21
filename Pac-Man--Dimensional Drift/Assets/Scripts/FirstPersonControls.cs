@@ -58,10 +58,13 @@ public class FirstPersonControls : MonoBehaviour
     public int kickDamage = 20;    // Damage dealt by kick
     public string[] enemyTags;     // Tags of the enemies the player can attack
 
+    private Animator animator;
+
     private void Awake()
     {
         // Get and store the CharacterController component attached to this GameObject
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
     }
 
     private bool isPerformingAction = false; // To ensure that only one action (slide or dash) happens at a time
@@ -110,11 +113,31 @@ public class FirstPersonControls : MonoBehaviour
         Move();
         LookAround();
         ApplyGravity();
+        HandleAnimations();
 
         // Prevent sliding if jumping
         if (!characterController.isGrounded)
         {
             isSliding = false; // Ensure the player stops sliding when in the air
+        }
+    }
+
+    private void HandleAnimations()
+    {
+        // Movement animation
+        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
+        animator.SetFloat("Speed", move.sqrMagnitude); // Set Speed parameter for Idle and Run animations
+
+        // Combat animations
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            animator.SetTrigger("PunchTrigger"); // Trigger Punch animation
+            PerformPunch();
+        }
+        else if (Input.GetKeyDown(KeyCode.V))
+        {
+            animator.SetTrigger("KickTrigger"); // Trigger Kick animation
+            PerformKick();
         }
     }
 
@@ -156,6 +179,7 @@ public class FirstPersonControls : MonoBehaviour
         if (characterController.isGrounded && !isSliding)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            animator.SetTrigger("JumpTrigger"); // Trigger Jump animation
         }
     }
 
@@ -259,6 +283,8 @@ public class FirstPersonControls : MonoBehaviour
         float originalSpeed = moveSpeed;
         moveSpeed = slideSpeed;
 
+        animator.SetTrigger("SlideTrigger"); // Trigger Slide animation
+
         yield return new WaitForSeconds(slideTime);
 
         characterController.height = standingHeight;
@@ -279,6 +305,8 @@ public class FirstPersonControls : MonoBehaviour
 
         float originalSpeed = moveSpeed;
         moveSpeed = dashSpeed;
+
+        animator.SetTrigger("DashTrigger"); // Trigger Dash animation
 
         yield return new WaitForSeconds(dashDuration);
 
