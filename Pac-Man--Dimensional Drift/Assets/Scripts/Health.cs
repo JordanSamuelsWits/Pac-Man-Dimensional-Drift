@@ -93,7 +93,9 @@ public class Health : MonoBehaviour
 }
 */
 
-using UnityEngine;
+
+
+/*using UnityEngine;
 using UnityEngine.SceneManagement;  // Import SceneManager
 
 public class Health : MonoBehaviour
@@ -130,4 +132,60 @@ public class Health : MonoBehaviour
         // Load the specified game over scene
         SceneManager.LoadScene("GameOverScene");
     }
+}*/
+
+
+using UnityEngine;
+using UnityEngine.SceneManagement;  // Import SceneManager
+
+public class Health : MonoBehaviour
+{
+    public float maxHealth = 100f;
+    private float currentHealth;
+
+    public HealthUI healthUI;      // Reference to the HealthUI script
+    public string gameOverScene;   // Name of the scene to load upon death
+
+    public AudioClip deathSound;   // Audio clip for the death sound
+    private AudioSource audioSource; // Audio source component
+
+    void Start()
+    {
+        currentHealth = maxHealth;
+        healthUI.SetMaxHealth(maxHealth);
+
+        // Get or add an AudioSource component
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            Die();  // Call the death method when health reaches 0
+        }
+
+        healthUI.SetHealth(currentHealth);
+    }
+
+    private void Die()
+    {
+        // Play the death sound if available
+        if (deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+        }
+
+        Debug.Log("Player has died.");
+
+        SceneManager.LoadScene("GameOverScene");
+    }
 }
+
+
