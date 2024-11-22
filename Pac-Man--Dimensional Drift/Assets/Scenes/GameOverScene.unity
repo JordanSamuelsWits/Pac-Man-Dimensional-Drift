@@ -151,6 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb56458f56785ab4b91f7455f6e19bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstAudio: {fileID: 8300000, guid: f6855115fe397a645b10ad1f8d408836, type: 3}
+  secondAudio: {fileID: 8300000, guid: eb3def581a37eb24eb609398d83559f6, type: 3}
 --- !u!4 &55337257
 Transform:
   m_ObjectHideFlags: 0
@@ -1187,6 +1189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb56458f56785ab4b91f7455f6e19bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstAudio: {fileID: 0}
+  secondAudio: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
